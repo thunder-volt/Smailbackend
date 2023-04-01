@@ -4,10 +4,10 @@ const fs = require("fs").promises;
 const path = require("path");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
-const cors = require('cors');
+const cors = require("cors");
 var corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:8000"]
-}
+  origin: ["http://localhost:3000", "http://localhost:8000"],
+};
 app.use(cors(corsOptions));
 const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 
@@ -52,21 +52,23 @@ async function authorize() {
   return client;
 }
 
-// async function listLabels(auth) {
-//     const gmail = google.gmail({ version: "v1", auth });
-//     const res = await gmail.users.labels.list({
-//         userId: "me",
-//     });
-//     const labels = res.data.labels;
-//     if (!labels || labels.length === 0) {
-//         console.log("No labels found.");
-//         return;
-//     }
-//     console.log("Labels:");
-//     labels.forEach((label) => {
-//         console.log(`- ${label.name}`);
-//     });
-// }
+async function listLabels(auth) {
+  let _labels;
+  const gmail = google.gmail({ version: "v1", auth });
+  const res = await gmail.users.labels.list({
+    userId: "me",
+  });
+  const labels = res.data.labels;
+  if (!labels || labels.length === 0) {
+    console.log("No labels found.");
+    return;
+  }
+  console.log("Labels:");
+  _labels = labels.map((label) => {
+    return label.name;
+  });
+  labelsFetch = [..._labels];
+}
 
 const gamilData = async (auth) => {
   const gmail = google.gmail({ version: "v1", auth });
@@ -89,7 +91,7 @@ const gamilData = async (auth) => {
     });
     messages = await Promise.all(promises);
     console.log(messages);
-    mailsFetch = { ...messages }
+    mailsFetch = { ...messages };
     return messages;
   } catch (err) {
     // document.getElementById('content').innerText = err.message;
@@ -108,6 +110,7 @@ const gamilData = async (auth) => {
   // document.getElementById('content').innerText = labels;
 };
 var mailsFetch = [];
+var labelsFetch = [];
 // app.post("/mails", async (req, res) => {
 //   // let data = [];
 //   try {
@@ -121,16 +124,23 @@ var mailsFetch = [];
 //   }
 // });
 
-authorize().then(async (res) => {
-  let mails = await gamilData(res);
-  return mails
-}).catch(err => {
-  console.log(err);
-})
+authorize()
+  .then(async (res) => {
+    let mails = await gamilData(res);
+    let labs = await listLabels(res);
+    return [mails, labs];
+  })
+  .catch((err) => {
+    console.log(err);
+  });
 
-app.get('/mailsget', (req, res) => {
+app.get("/mailsget", (req, res) => {
   res.send(mailsFetch);
-})
+});
+
+app.get("/labelsget", (req, res) => {
+  res.send(labelsFetch);
+});
 
 app.listen(8000, () => {
   console.log("Server Started");
