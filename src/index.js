@@ -4,7 +4,11 @@ const fs = require("fs").promises;
 const path = require("path");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
-
+const cors = require('cors');
+var corsOptions = {
+  origin: ["http://localhost:3000", "http://localhost:8000"]
+}
+app.use(cors(corsOptions));
 const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 
 const TOKEN_PATH = path.join(__dirname, "token.json");
@@ -85,6 +89,7 @@ const gamilData = async (auth) => {
     });
     messages = await Promise.all(promises);
     console.log(messages);
+    mailsFetch = { ...messages }
     return messages;
   } catch (err) {
     // document.getElementById('content').innerText = err.message;
@@ -102,19 +107,30 @@ const gamilData = async (auth) => {
   //     'Labels:\n');
   // document.getElementById('content').innerText = labels;
 };
+var mailsFetch = [];
+// app.post("/mails", async (req, res) => {
+//   // let data = [];
+//   try {
+//     let result = await authorize();
+//     mailsFetch = await gamilData(result);
+//     console.log(mailsFetch.length);
+//     res.send(mailsFetch);
+//   } catch (error) {
+//     console.error(error);
+//     res.status(500).send(error);
+//   }
+// });
 
-app.post("/mails", async (req, res) => {
-  let data = [];
-  try {
-    let result = await authorize();
-    data = await gamilData(result);
-    console.log(data.length);
-    res.send(data);
-  } catch (error) {
-    console.error(error);
-    res.status(500).send(error);
-  }
-});
+authorize().then(async (res) => {
+  let mails = await gamilData(res);
+  return mails
+}).catch(err => {
+  console.log(err);
+})
+
+app.get('/mailsget', (req, res) => {
+  res.send(mailsFetch);
+})
 
 app.listen(8000, () => {
   console.log("Server Started");
