@@ -94,35 +94,12 @@ const gamilData = async (auth) => {
     mailsFetch = { ...messages };
     return messages;
   } catch (err) {
-    // document.getElementById('content').innerText = err.message;
-    // console.log(err);
+    console.log(err);
     return null;
   }
-  // const labels = messages;
-  // if (!labels || labels.length == 0) {
-  //     document.getElementById('content').innerText = 'No labels found.';
-  //     return;
-  // }
-  // Flatten to string to display
-  // const output = labels.reduce(
-  //     (str, label) => `${str}${label}\n`,
-  //     'Labels:\n');
-  // document.getElementById('content').innerText = labels;
 };
 var mailsFetch = [];
 var labelsFetch = [];
-// app.post("/mails", async (req, res) => {
-//   // let data = [];
-//   try {
-//     let result = await authorize();
-//     mailsFetch = await gamilData(result);
-//     console.log(mailsFetch.length);
-//     res.send(mailsFetch);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
 
 authorize()
   .then(async (res) => {
