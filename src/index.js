@@ -121,14 +121,14 @@ const gmailData = async (auth) => {
           subject = threadData.data.messages[0].payload.headers[i].value;
         }
       }
-      // return {
-      //   id: threadData.data.id,
-      //   subject: subject,
-      //   snippet: threadData.data.messages[0].snippet,
-      //   from: from,
-      //   date: date,
-      // };
-      return threadData;
+      return {
+        id: threadData.data.id,
+        subject: subject,
+        snippet: threadData.data.messages[0].snippet,
+        from: from,
+        date: date,
+      };
+      // return threadData;
     });
 
     threads = await Promise.all(thread_prom);
@@ -137,6 +137,7 @@ const gmailData = async (auth) => {
     mailsFetch = [...messages];
     return messages;
   } catch (err) {
+    console.log(err);
     return null;
   }
 };
