@@ -63,14 +63,15 @@ async function listLabels(auth) {
     console.log("No labels found.");
     return;
   }
-  console.log("Labels:");
+  // console.log("Labels:");
+  // console.log(labels);
   _labels = labels.map((label) => {
-    return label.name;
+    return { id: label.id, name: label.name };
   });
   labelsFetch = [..._labels];
 }
 
-const gamilData = async (auth) => {
+const gmailData = async (auth) => {
   const gmail = google.gmail({ version: "v1", auth });
   let response;
   let messages;
@@ -80,53 +81,72 @@ const gamilData = async (auth) => {
       labelIds: ["INBOX"],
       maxResults: 50,
     });
-    console.log(response.data.messages[0].id);
+    // console.log(response.data.messages[0].id);
     const promises = response.data.messages.map(async (mail) => {
       let _data = await gmail.users.messages.get({
         userId: "me",
         id: mail.id,
       });
-      //   console.log(_data);
-      return _data.data.snippet;
+      // console.log(_data);
+      return {
+        id: mail.id,
+        labels: [..._data.data.labelIds],
+        snippet: _data.data.snippet,
+        threadId: _data.data.threadId,
+      };
     });
     messages = await Promise.all(promises);
-    console.log(messages);
-    mailsFetch = { ...messages };
+
+    const thread_prom = messages.map(async (mail) => {
+      let threadData = await gmail.users.threads.get({
+        userId: "me",
+        id: mail.threadId,
+      });
+      // console.log(threadData);
+      let from;
+      let date;
+      let subject;
+      for (
+        let i = 0;
+        i < threadData.data.messages[0].payload.headers.length;
+        i++
+      ) {
+        if (threadData.data.messages[0].payload.headers[i].name === "From") {
+          from = threadData.data.messages[0].payload.headers[i].value;
+        }
+        if (threadData.data.messages[0].payload.headers[i].name === "Date") {
+          date = threadData.data.messages[0].payload.headers[i].value;
+        }
+        if (threadData.data.messages[0].payload.headers[i].name === "Subject") {
+          subject = threadData.data.messages[0].payload.headers[i].value;
+        }
+      }
+      // return {
+      //   id: threadData.data.id,
+      //   subject: subject,
+      //   snippet: threadData.data.messages[0].snippet,
+      //   from: from,
+      //   date: date,
+      // };
+      return threadData;
+    });
+
+    threads = await Promise.all(thread_prom);
+    threadFetch = [...threads];
+    // console.log(messages);
+    mailsFetch = [...messages];
     return messages;
   } catch (err) {
-    // document.getElementById('content').innerText = err.message;
-    // console.log(err);
     return null;
   }
-  // const labels = messages;
-  // if (!labels || labels.length == 0) {
-  //     document.getElementById('content').innerText = 'No labels found.';
-  //     return;
-  // }
-  // Flatten to string to display
-  // const output = labels.reduce(
-  //     (str, label) => `${str}${label}\n`,
-  //     'Labels:\n');
-  // document.getElementById('content').innerText = labels;
 };
 var mailsFetch = [];
 var labelsFetch = [];
-// app.post("/mails", async (req, res) => {
-//   // let data = [];
-//   try {
-//     let result = await authorize();
-//     mailsFetch = await gamilData(result);
-//     console.log(mailsFetch.length);
-//     res.send(mailsFetch);
-//   } catch (error) {
-//     console.error(error);
-//     res.status(500).send(error);
-//   }
-// });
+var threadFetch = [];
 
 authorize()
   .then(async (res) => {
-    let mails = await gamilData(res);
+    let mails = await gmailData(res);
     let labs = await listLabels(res);
     return [mails, labs];
   })
@@ -140,6 +160,10 @@ app.get("/mailsget", (req, res) => {
 
 app.get("/labelsget", (req, res) => {
   res.send(labelsFetch);
+});
+
+app.get("/threadsget", (req, res) => {
+  res.send(threadFetch);
 });
 
 app.listen(8000, () => {
