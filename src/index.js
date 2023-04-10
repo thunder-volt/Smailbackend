@@ -14,6 +14,26 @@ const SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"];
 const TOKEN_PATH = path.join(__dirname, "token.json");
 const CREDENTIALS_PATH = path.join(__dirname, "credentials.json");
 
+// variables
+var mailsFetch = [];
+var labelsFetch = [];
+var threadFetch = [];
+var threadFetch2 = [];
+var threadList = [];
+
+function getHTMLPart(arr) {
+  for (var x = 0; x <= arr.length; x++) {
+    if (typeof arr[x].parts === "undefined") {
+      if (arr[x].mimeType === "text/html") {
+        return arr[x].body.data;
+      }
+    } else {
+      return getHTMLPart(arr[x].parts);
+    }
+  }
+  return "";
+}
+
 async function loadSavedCredentialsIfExist() {
   try {
     const content = await fs.readFile(TOKEN_PATH);
@@ -71,6 +91,115 @@ async function listLabels(auth) {
   labelsFetch = [..._labels];
 }
 
+const threadsData = async (auth) => {
+  const gmail = google.gmail({ version: "v1", auth });
+  let response;
+  try {
+    response = await gmail.users.threads.list({
+      userId: "me",
+      maxResults: 10,
+    });
+    threadList = [...response.data.threads];
+    const thread_prom = threadList.map(async (mail) => {
+      let threadData = await gmail.users.threads.get({
+        userId: "me",
+        id: mail.id,
+      });
+      // console.log(threadData);
+      let from = "";
+      let to = "";
+      let reply_to = "";
+      let body = "";
+      let date = "";
+      let subject = "";
+      let labelsList = [];
+      let snippet = "";
+      let threadId = "";
+      let mails = [];
+
+      for (let i = 0; i < threadData.data.messages.length; i++) {
+        // console.log(threadData.data.messages[i].payload.headers.length);
+        labelsList = [...threadData.data.messages[i].labelIds];
+        snippet = threadData.data.messages[i].snippet;
+        threadId = threadData.data.messages[i].threadId;
+        for (
+          let j = 0;
+          j < threadData.data.messages[i].payload.headers.length;
+          j++
+        ) {
+          if (threadData.data.messages[i].payload.headers[j].name === "From") {
+            from = threadData.data.messages[i].payload.headers[j].value;
+          }
+          if (threadData.data.messages[i].payload.headers[j].name === "Date") {
+            date = threadData.data.messages[i].payload.headers[j].value;
+          }
+          if (
+            threadData.data.messages[i].payload.headers[j].name === "Subject"
+          ) {
+            subject = threadData.data.messages[i].payload.headers[j].value;
+          }
+          if (threadData.data.messages[i].payload.headers[j].name === "To") {
+            to = threadData.data.messages[i].payload.headers[j].value;
+          }
+          if (
+            threadData.data.messages[i].payload.headers[j].name === "Reply-To"
+          ) {
+            reply_to = threadData.data.messages[i].payload.headers[j].value;
+          }
+          if (
+            threadData.data.messages[i].payload.headers[j].name === "Subject"
+          ) {
+            subject = threadData.data.messages[i].payload.headers[j].value;
+          }
+          // console.log(
+          //   typeof threadData.data.messages[i].payload.parts[0].body.data
+          // );
+          // let encodedBody = threadData.data.messages[i].payload.parts
+          //   ? threadData.data.messages[i].payload?.parts[1].body.data
+          //   : "";
+        }
+        let encodedBody = "";
+        if (typeof threadData.data.messages[i].payload.parts === "undefined") {
+          encodedBody = threadData.data.messages[i].payload.body;
+        } else {
+          encodedBody = getHTMLPart(threadData.data.messages[i].payload.parts);
+          // console.log(encodedBody);
+        }
+        encodedBody =
+          typeof encodedBody === "string"
+            ? encodedBody
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .replace(/\s/g, "")
+            : "";
+        body = Buffer.from(encodedBody, "base64").toString();
+        let object = {
+          from: from,
+          to: to,
+          reply_to: reply_to ? reply_to : from,
+          date: date,
+          subject: subject,
+          labelsList: labelsList,
+          snippet: snippet,
+          threadId: threadId,
+          body: body,
+        };
+        mails.push(object);
+      }
+      return mails;
+      // return threadData.data.messages;
+    });
+    threads = await Promise.all(thread_prom);
+    threadFetch2 = [...threads];
+
+    // console.log(response);
+    return threadFetch2;
+  } catch (err) {
+    console.error(err);
+    return null;
+  }
+};
+
 const gmailData = async (auth) => {
   const gmail = google.gmail({ version: "v1", auth });
   let response;
@@ -106,29 +235,29 @@ const gmailData = async (auth) => {
       let from;
       let date;
       let subject;
-      for (
-        let i = 0;
-        i < threadData.data.messages[0].payload.headers.length;
-        i++
-      ) {
-        if (threadData.data.messages[0].payload.headers[i].name === "From") {
-          from = threadData.data.messages[0].payload.headers[i].value;
-        }
-        if (threadData.data.messages[0].payload.headers[i].name === "Date") {
-          date = threadData.data.messages[0].payload.headers[i].value;
-        }
-        if (threadData.data.messages[0].payload.headers[i].name === "Subject") {
-          subject = threadData.data.messages[0].payload.headers[i].value;
-        }
-      }
-      return {
-        id: threadData.data.id,
-        subject: subject,
-        snippet: threadData.data.messages[0].snippet,
-        from: from,
-        date: date,
-      };
-      // return threadData;
+      // for (
+      //   let i = 0;
+      //   i < threadData.data.messages[0].payload.headers.length;
+      //   i++
+      // ) {
+      //   if (threadData.data.messages[0].payload.headers[i].name === "From") {
+      //     from = threadData.data.messages[0].payload.headers[i].value;
+      //   }
+      //   if (threadData.data.messages[0].payload.headers[i].name === "Date") {
+      //     date = threadData.data.messages[0].payload.headers[i].value;
+      //   }
+      //   if (threadData.data.messages[0].payload.headers[i].name === "Subject") {
+      //     subject = threadData.data.messages[0].payload.headers[i].value;
+      //   }
+      // }
+      // return {
+      //   id: threadData.data.id,
+      //   subject: subject,
+      //   snippet: threadData.data.messages[0].snippet,
+      //   from: from,
+      //   date: date,
+      // };
+      return threadData;
     });
 
     threads = await Promise.all(thread_prom);
@@ -141,15 +270,13 @@ const gmailData = async (auth) => {
     return null;
   }
 };
-var mailsFetch = [];
-var labelsFetch = [];
-var threadFetch = [];
 
 authorize()
   .then(async (res) => {
     let mails = await gmailData(res);
     let labs = await listLabels(res);
-    return [mails, labs];
+    let threads = await threadsData(res);
+    return [mails, labs, threads];
   })
   .catch((err) => {
     console.log(err);
@@ -165,6 +292,10 @@ app.get("/labelsget", (req, res) => {
 
 app.get("/threadsget", (req, res) => {
   res.send(threadFetch);
+});
+
+app.get("/threadslist", (req, res) => {
+  res.send(threadFetch2);
 });
 
 app.listen(8000, () => {
