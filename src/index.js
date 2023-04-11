@@ -193,6 +193,7 @@ const threadsData = async (auth) => {
     threadFetch2 = [...threads];
 
     // console.log(response);
+    console.log(threadFetch2);
     return threadFetch2;
   } catch (err) {
     console.error(err);
