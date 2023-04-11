@@ -18,7 +18,6 @@ const CREDENTIALS_PATH = path.join(__dirname, "credentials.json");
 var mailsFetch = [];
 var labelsFetch = [];
 var threadFetch = [];
-var threadFetch2 = [];
 var threadList = [];
 
 function getHTMLPart(arr) {
@@ -190,94 +189,22 @@ const threadsData = async (auth) => {
       // return threadData.data.messages;
     });
     threads = await Promise.all(thread_prom);
-    threadFetch2 = [...threads];
+    threadFetch = [...threads];
 
     // console.log(response);
-    console.log(threadFetch2);
-    return threadFetch2;
+    console.log(threadFetch);
+    return threadFetch;
   } catch (err) {
     console.error(err);
     return null;
   }
 };
 
-const gmailData = async (auth) => {
-  const gmail = google.gmail({ version: "v1", auth });
-  let response;
-  let messages;
-  try {
-    response = await gmail.users.messages.list({
-      userId: "me",
-      labelIds: ["INBOX"],
-      maxResults: 50,
-    });
-    // console.log(response.data.messages[0].id);
-    const promises = response.data.messages.map(async (mail) => {
-      let _data = await gmail.users.messages.get({
-        userId: "me",
-        id: mail.id,
-      });
-      // console.log(_data);
-      return {
-        id: mail.id,
-        labels: [..._data.data.labelIds],
-        snippet: _data.data.snippet,
-        threadId: _data.data.threadId,
-      };
-    });
-    messages = await Promise.all(promises);
-
-    const thread_prom = messages.map(async (mail) => {
-      let threadData = await gmail.users.threads.get({
-        userId: "me",
-        id: mail.threadId,
-      });
-      // console.log(threadData);
-      let from;
-      let date;
-      let subject;
-      // for (
-      //   let i = 0;
-      //   i < threadData.data.messages[0].payload.headers.length;
-      //   i++
-      // ) {
-      //   if (threadData.data.messages[0].payload.headers[i].name === "From") {
-      //     from = threadData.data.messages[0].payload.headers[i].value;
-      //   }
-      //   if (threadData.data.messages[0].payload.headers[i].name === "Date") {
-      //     date = threadData.data.messages[0].payload.headers[i].value;
-      //   }
-      //   if (threadData.data.messages[0].payload.headers[i].name === "Subject") {
-      //     subject = threadData.data.messages[0].payload.headers[i].value;
-      //   }
-      // }
-      // return {
-      //   id: threadData.data.id,
-      //   subject: subject,
-      //   snippet: threadData.data.messages[0].snippet,
-      //   from: from,
-      //   date: date,
-      // };
-      return threadData;
-    });
-
-    threads = await Promise.all(thread_prom);
-    threadFetch = [...threads];
-    // console.log(messages);
-    mailsFetch = [...messages];
-    return messages;
-  } catch (err) {
-    console.log(err);
-    return null;
-  }
-};
-
 authorize()
   .then(async (res) => {
-    let mails = await gmailData(res);
     let labs = await listLabels(res);
     let threads = await threadsData(res);
-    return [mails, labs, threads];
+    return [labs, threads];
   })
   .catch((err) => {
     console.log(err);
@@ -291,12 +218,8 @@ app.get("/labelsget", (req, res) => {
   res.send(labelsFetch);
 });
 
-app.get("/threadsget", (req, res) => {
-  res.send(threadFetch);
-});
-
 app.get("/threadslist", (req, res) => {
-  res.send(threadFetch2);
+  res.send(threadFetch);
 });
 
 app.listen(8000, () => {
