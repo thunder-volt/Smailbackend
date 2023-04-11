@@ -176,7 +176,7 @@ const threadsData = async (auth) => {
         let object = {
           from: from,
           to: to,
-          reply_to: reply_to ? reply_to : from,
+          reply_to: reply_to,
           date: date,
           subject: subject,
           labelsList: labelsList,
