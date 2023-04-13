@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
-const fs = require("fs").promises;
-const fsSync = require("fs");
+const fs = require("fs");
 const path = require("path");
 const { authenticate } = require("@google-cloud/local-auth");
 const { google } = require("googleapis");
@@ -38,7 +37,7 @@ function getHTMLPart(arr) {
 
 async function loadSavedCredentialsIfExist() {
   try {
-    const content = await fs.readFile(TOKEN_PATH);
+    const content = await fs.promises.readFile(TOKEN_PATH);
     const credentials = JSON.parse(content);
     return google.auth.fromJSON(credentials);
   } catch (err) {
@@ -47,7 +46,7 @@ async function loadSavedCredentialsIfExist() {
 }
 
 async function saveCredentials(client) {
-  const content = await fs.readFile(CREDENTIALS_PATH);
+  const content = await fs.promises.readFile(CREDENTIALS_PATH);
   const keys = JSON.parse(content);
   const key = keys.installed || keys.web;
   const payload = JSON.stringify({
@@ -56,7 +55,7 @@ async function saveCredentials(client) {
     client_secret: key.client_secret,
     refresh_token: client.credentials.refresh_token,
   });
-  await fs.writeFile(TOKEN_PATH, payload);
+  await fs.promises.writeFile(TOKEN_PATH, payload);
 }
 
 async function authorize() {
@@ -109,7 +108,7 @@ async function fetchAttach(auth) {
           ? encoded.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "")
           : "";
       file = Buffer.from(encoded, "base64");
-      fsSync.writeFileSync(`./attachments/${attachment.fileName}`, file);
+      fs.writeFileSync(`./attachments/${attachment.fileName}`, file);
 
       return {
         messageId: attachment.mId,
