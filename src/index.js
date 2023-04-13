@@ -246,7 +246,7 @@ const threadsData = async (auth) => {
           labelsList: labelsList,
           snippet: snippet,
           threadId: threadId,
-          body: body,
+          body: body ? body : "no body",
         };
         mails.push(object);
       }
