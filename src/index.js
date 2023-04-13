@@ -108,7 +108,8 @@ async function fetchAttach(auth) {
           ? encoded.replace(/-/g, "+").replace(/_/g, "/").replace(/\s/g, "")
           : "";
       file = Buffer.from(encoded, "base64");
-      fs.writeFileSync(`./attachments/${attachment.fileName}`, file);
+      fileName = `${attachment.mId}_${attachment.fileName}`;
+      fs.writeFileSync(`./attachments/${fileName}`, file);
 
       return {
         messageId: attachment.mId,
