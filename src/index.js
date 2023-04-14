@@ -231,9 +231,9 @@ const threadsData = async (auth) => {
         encodedBody =
           typeof encodedBody === "string"
             ? encodedBody
-              .replace(/-/g, "+")
-              .replace(/_/g, "/")
-              .replace(/\s/g, "")
+                .replace(/-/g, "+")
+                .replace(/_/g, "/")
+                .replace(/\s/g, "")
             : "";
         body = Buffer.from(encodedBody, "base64").toString();
         let object = {
@@ -258,8 +258,8 @@ const threadsData = async (auth) => {
     threadFetch = [...threads];
 
     // console.log(response);
-    console.log(threadFetch2);
-    return threadFetch2;
+    // console.log(threadFetch);
+    return threadFetch;
   } catch (err) {
     console.error(err);
     return null;
