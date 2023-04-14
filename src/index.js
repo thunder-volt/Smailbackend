@@ -117,7 +117,7 @@ async function fetchAttach(auth) {
         fileName: attachment.fileName,
         size: attach_data.data.size,
         mimeType: attachment.mimeType,
-        // data: attach_data.data.data,
+        data: attach_data.data.data,
       };
     });
 
@@ -251,8 +251,8 @@ const threadsData = async (auth) => {
         };
         mails.push(object);
       }
-      // return mails;
-      return threadData.data.messages;
+      return mails;
+      // return threadData.data.messages;
     });
     threads = await Promise.all(thread_prom);
     threadFetch = [...threads];
