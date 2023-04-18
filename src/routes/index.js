@@ -6,7 +6,7 @@ const {
   listLabels,
   threadsData,
 } = require("../controllers/fetch_controllers.js");
-const { addLabel } = require("../controllers/label_controller.js");
+const { addLabel, deleteLabel } = require("../controllers/label_controller.js");
 
 const app = express();
 
@@ -42,6 +42,12 @@ router.post("/addlabel", async (req, res, next) => {
   const auth = await authorize();
   const data = await addLabel(auth, label);
   res.send(data);
+});
+
+router.delete("/deletelabel", async (req, res, next) => {
+  const auth = await authorize();
+  const response = await deleteLabel(auth, req.body.id);
+  res.send(response);
 });
 
 module.exports = app;

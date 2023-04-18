@@ -21,3 +21,12 @@ module.exports.addLabel = async (auth, label) => {
   });
   return res;
 };
+
+module.exports.deleteLabel = async (auth, id) => {
+  const gmail = google.gmail({ version: "v1", auth });
+  const res = await gmail.users.labels.delete({
+    userId: "me",
+    id: id,
+  });
+  return res;
+};

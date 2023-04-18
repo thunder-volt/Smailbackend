@@ -12,12 +12,15 @@ module.exports.listLabels = async (auth) => {
     console.log("No labels found.");
     return;
   }
-  // console.log("Labels:");
-  // console.log(labels);
-  _labels = labels.map((label) => {
-    return { id: label.id, name: label.name };
+  const promises = labels.map(async (label) => {
+    let labelData = await gmail.users.labels.get({
+      userId: "me",
+      id: label.id,
+    });
+    return labelData.data;
   });
-  let labelsFetch = [..._labels];
+  let labelInfo = await Promise.all(promises);
+  let labelsFetch = [...labelInfo];
   return labelsFetch;
 };
 
