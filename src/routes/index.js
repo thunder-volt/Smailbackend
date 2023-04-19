@@ -7,11 +7,13 @@ const {
   threadsData,
 } = require("../controllers/fetch_controllers.js");
 const { addLabel, deleteLabel } = require("../controllers/label_controller.js");
-
 const app = express();
 
 var corsOptions = {
-  origin: ["http://localhost:3000", "http://localhost:8000"],
+  origin: [
+    { origin: "http://localhost:3000", credentials: true },
+    "http://localhost:8000",
+  ],
 };
 
 app.use(cors(corsOptions));
