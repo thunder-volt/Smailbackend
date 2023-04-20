@@ -16,7 +16,7 @@ const oauthClient = new google.auth.OAuth2(
 );
 oauthClient.setCredentials({ refresh_token: creds.refresh_token });
 
-async function sendMail() {
+module.exports.sendMail = async ({ user, to, from, subject, text, html }) => {
   try {
     const accessToken = await oauthClient.getAccessToken();
     // console.log(accessToken);
@@ -24,7 +24,7 @@ async function sendMail() {
       service: "Gmail",
       auth: {
         type: "OAuth2",
-        user: "ch21b108@smail.iitm.ac.in",
+        user: user ? user : "ch21b108@smail.iitm.ac.in",
         clientId: creds.client_id,
         clientSecret: creds.client_secret,
         refreshToken: creds.refresh_token,
@@ -34,11 +34,12 @@ async function sendMail() {
     });
 
     const mailOptions = {
-      to: "ch21b062@smail.iitm.ac.in",
-      from: "ch21b108@smail.iitm.ac.in",
-      subject: "hello",
-      text: "test",
-      html: "<h1>hello</h1>",
+      to: to ? to : "ch21b062@smail.iitm.ac.in",
+      from: from ? from : "ch21b108@smail.iitm.ac.in",
+      subject: subject ? subject : "hello",
+      text: text ? text : "test",
+      html: html ? html : "<h1>hello</h1>",
+      attachments: false,
     };
 
     const result = await transport.sendMail(mailOptions);
@@ -46,8 +47,4 @@ async function sendMail() {
   } catch (e) {
     return e;
   }
-}
-
-sendMail()
-  .then((res) => console.log(res))
-  .catch((e) => console.error(e));
+};

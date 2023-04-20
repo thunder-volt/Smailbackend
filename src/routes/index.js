@@ -7,6 +7,7 @@ const {
   threadsData,
 } = require("../controllers/fetch_controllers.js");
 const { addLabel, deleteLabel } = require("../controllers/label_controller.js");
+const { postMail } = require("../controllers/mail_controllers.js");
 const app = express();
 
 var corsOptions = {
@@ -49,6 +50,18 @@ router.post("/addlabel", async (req, res, next) => {
 router.delete("/deletelabel", async (req, res, next) => {
   const auth = await authorize();
   const response = await deleteLabel(auth, req.body.id);
+  res.send(response);
+});
+
+router.post("/dispatch", async (req, res, next) => {
+  const response = await postMail({
+    user: req.body.user,
+    to: req.body.to,
+    from: req.body.from,
+    subject: req.body.subject,
+    text: req.body.text,
+    html: req.body.html,
+  });
   res.send(response);
 });
 
