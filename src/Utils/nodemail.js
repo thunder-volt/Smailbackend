@@ -2,7 +2,9 @@ const nodemailer = require("nodemailer");
 const { google } = require("googleapis");
 const fs = require("fs");
 var path = require("path");
-require("dotenv").config();
+require("dotenv").config({
+  path: path.join(__dirname, "..", "..", "vars/.env"),
+});
 
 const data = fs.readFileSync(
   path.join(__dirname, "..", "controllers/token.json")
