@@ -17,7 +17,7 @@ async function loadSavedCredentialsIfExist() {
   try {
     const content = await fs.promises.readFile(TOKEN_PATH);
     const credentials = JSON.parse(content);
-    console.log(credentials);
+    // console.log(credentials);
     return google.auth.fromJSON(credentials);
   } catch (err) {
     return null;
@@ -40,7 +40,7 @@ async function saveCredentials(client) {
 module.exports.authorize = async () => {
   let client = await loadSavedCredentialsIfExist();
   if (client) {
-    console.log(client);
+    // console.log(client);
     return client;
   }
   client = await authenticate({

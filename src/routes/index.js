@@ -7,7 +7,7 @@ const {
   threadsData,
 } = require("../controllers/fetch_controllers.js");
 const { addLabel, deleteLabel } = require("../controllers/label_controller.js");
-const { postMail } = require("../controllers/mail_controllers.js");
+const { postMail, batchModify } = require("../controllers/mail_controllers.js");
 const app = express();
 
 var corsOptions = {
@@ -61,6 +61,16 @@ router.post("/dispatch", async (req, res, next) => {
     subject: req.body.subject,
     text: req.body.text,
     html: req.body.html,
+  });
+  res.send(response);
+});
+
+router.post("/batchModify", async (req, res, next) => {
+  const auth = await authorize();
+  const response = await batchModify(auth, {
+    ids: req.body.ids,
+    add: req.body.add,
+    remove: req.body.remove,
   });
   res.send(response);
 });

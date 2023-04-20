@@ -43,7 +43,7 @@ module.exports.threadsData = async (auth) => {
   try {
     response = await gmail.users.threads.list({
       userId: "me",
-      maxResults: 100,
+      maxResults: 50,
     });
     let threadList = [...response.data.threads];
     let attach_ids = [];
