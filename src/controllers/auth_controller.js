@@ -7,6 +7,7 @@ const SCOPES = [
   "https://www.googleapis.com/auth/gmail.readonly",
   "https://www.googleapis.com/auth/gmail.modify",
   "https://www.googleapis.com/auth/gmail.labels",
+  "https://mail.google.com/",
 ];
 
 const TOKEN_PATH = path.join(__dirname, "token.json");

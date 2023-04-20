@@ -21,20 +21,21 @@ async function sendMail() {
     const accessToken = await oauthClient.getAccessToken();
     // console.log(accessToken);
     const transport = nodemailer.createTransport({
-      service: "gmail",
+      service: "Gmail",
       auth: {
         type: "OAuth2",
-        user: "tdas11235@gmail.com",
+        user: "ch21b108@smail.iitm.ac.in",
         clientId: creds.client_id,
         clientSecret: creds.client_secret,
         refreshToken: creds.refresh_token,
-        accessToken: accessToken,
+        accessToken: accessToken.token,
+        expires: 1484314697598,
       },
     });
 
     const mailOptions = {
-      from: "tdas11235@gmail.com",
-      to: "ch21b108@smail.iitm.ac.in",
+      to: "ch21b062@smail.iitm.ac.in",
+      from: "ch21b108@smail.iitm.ac.in",
       subject: "hello",
       text: "test",
       html: "<h1>hello</h1>",
