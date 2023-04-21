@@ -16,10 +16,18 @@ const oauthClient = new google.auth.OAuth2(
   creds.client_secret,
   process.env.REDIRECT_URL
 );
-oauthClient.setCredentials({ refresh_token: creds.refresh_token });
 
-module.exports.sendMail = async ({ user, to, from, subject, text, html }) => {
+module.exports.sendMail = async ({
+  user,
+  to,
+  from,
+  subject,
+  text,
+  html,
+  refresh_token,
+}) => {
   try {
+    oauthClient.setCredentials({ refresh_token: refresh_token });
     const accessToken = await oauthClient.getAccessToken();
     // console.log(accessToken);
     const transport = nodemailer.createTransport({
