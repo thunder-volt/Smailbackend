@@ -31,7 +31,7 @@ router.get("/labelsget", authCheck, async (req, res, next) => {
   res.send(data);
 });
 
-router.get("/threadslist", async (req, res, next) => {
+router.get("/threadslist", authCheck, async (req, res, next) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -42,7 +42,7 @@ router.get("/threadslist", async (req, res, next) => {
   res.send(data);
 });
 
-router.post("/addlabel", async (req, res, next) => {
+router.post("/addlabel", authCheck, async (req, res, next) => {
   let label = {
     name: req.body.name,
     color: {
@@ -60,7 +60,7 @@ router.post("/addlabel", async (req, res, next) => {
   res.send(data);
 });
 
-router.delete("/deletelabel", async (req, res, next) => {
+router.delete("/deletelabel", authCheck, async (req, res, next) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
@@ -71,7 +71,7 @@ router.delete("/deletelabel", async (req, res, next) => {
   res.send(response);
 });
 
-router.post("/dispatch", async (req, res, next) => {
+router.post("/dispatch", authCheck, async (req, res, next) => {
   const response = await postMail({
     user: req.body.user,
     to: req.body.to,
@@ -84,7 +84,7 @@ router.post("/dispatch", async (req, res, next) => {
   res.send(response);
 });
 
-router.post("/batchModify", async (req, res, next) => {
+router.post("/batchModify", authCheck, async (req, res, next) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,
     process.env.CLIENT_SECRET,
