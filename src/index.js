@@ -10,8 +10,8 @@ const { testDbConnection } = require("./Config/db");
 const passport = require("passport");
 const cors = require("cors");
 const bodyParser = require("body-parser")
-const certificate = fs.readFileSync("./certificate.crt");
-const key = fs.readFileSync("./private.key");
+const certificate = fs.readFileSync("./certificate1.crt");
+const key = fs.readFileSync("./private1.key");
 const https = require("https");
 const cred = {
   key: key,
