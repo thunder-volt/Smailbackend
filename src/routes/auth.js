@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const passport = require("passport");
 require("../Config/passport");
-
+const fs = require("fs");
+const file = fs.readFileSync("./E62A6FD9BC1C4B443D7DFF0410E29CC9.txt")
 // auth login
 router.get("/login", (req, res) => {
   res.send(req.user);
@@ -27,6 +28,10 @@ router.get(
     ],
   })
 );
+
+router.get("/.well-known/pki-validation/E62A6FD9BC1C4B443D7DFF0410E29CC9.txt", (req, res) => {
+  res.sendFile("./E62A6FD9BC1C4B443D7DFF0410E29CC9.txt");
+})
 
 // callback route for google to redirect to
 // hand control to passport to use code to grab profile info

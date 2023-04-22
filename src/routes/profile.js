@@ -31,6 +31,10 @@ router.get("/labelsget", authCheck, async (req, res, next) => {
   res.send(data);
 });
 
+router.get("/", (req, res) => {
+  res.send("Hello")
+})
+
 router.get("/threadslist", authCheck, async (req, res, next) => {
   const oauth2Client = new google.auth.OAuth2(
     process.env.CLIENT_ID,

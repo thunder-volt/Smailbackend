@@ -9,6 +9,7 @@ const { User } = require("./Model/user");
 const { testDbConnection } = require("./Config/db");
 const passport = require("passport");
 const cors = require("cors");
+const bodyParser = require("body-parser")
 
 app.use(
   cookieSession({
@@ -16,7 +17,7 @@ app.use(
     keys: [process.env.KEYS],
   })
 );
-
+app.use(bodyParser.json())
 app.use(passport.initialize());
 app.use(passport.session());
 
