@@ -26,4 +26,4 @@ dist-ssr
 token.json
 /attachments
 # .env
-/vars
+# /vars
