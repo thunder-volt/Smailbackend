@@ -14,8 +14,8 @@ const certificate = fs.readFileSync("./certificate.crt");
 const key = fs.readFileSync("./private.key");
 const https = require("https");
 const cred = {
-  key,
-  certificate
+  key: key,
+  certificate: certificate
 }
 app.use(
   cookieSession({
