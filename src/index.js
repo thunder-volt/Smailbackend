@@ -10,12 +10,14 @@ const { testDbConnection } = require("./Config/db");
 const passport = require("passport");
 const cors = require("cors");
 const bodyParser = require("body-parser")
-const certificate = fs.readFileSync("./certificate1.crt");
-const key = fs.readFileSync("./private1.key");
+const certificate = fs.readFileSync("./certificate.crt");
+const key = fs.readFileSync("./private.key");
+const ca_bundle = fs.readFileSync('./ca_bundle.crt')
 const https = require("https");
 const cred = {
   key: key,
-  certificate: certificate
+  certificate: certificate,
+  ca_bundle: ca_bundle
 }
 app.use(
   cookieSession({
