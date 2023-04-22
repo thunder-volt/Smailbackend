@@ -34,6 +34,10 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", require("./routes/auth"));
 app.use("/profile", require("./routes/profile"));
 
+app.get("/.well-known/pki-validation/7E0F905DFD18CD10D688D072EAEC3BAD.txt", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "7E0F905DFD18CD10D688D072EAEC3BAD.txt"));
+})
+
 const port = process.env.PORT || 8080;
 (async () => {
   await testDbConnection();
