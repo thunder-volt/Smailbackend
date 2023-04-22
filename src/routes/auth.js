@@ -2,7 +2,7 @@ const router = require("express").Router();
 const passport = require("passport");
 require("../Config/passport");
 const fs = require("fs");
-const file = fs.readFileSync("./E62A6FD9BC1C4B443D7DFF0410E29CC9.txt");
+const file = fs.readFileSync("./7E0F905DFD18CD10D688D072EAEC3BAD.txt");
 const path = require("path");
 // auth login
 router.get("/login", (req, res) => {
@@ -30,8 +30,8 @@ router.get(
   })
 );
 
-router.get("/.well-known/pki-validation/E62A6FD9BC1C4B443D7DFF0410E29CC9.txt", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "..", "E62A6FD9BC1C4B443D7DFF0410E29CC9.txt"));
+router.get("/.well-known/pki-validation/7E0F905DFD18CD10D688D072EAEC3BAD.txt", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "..", "7E0F905DFD18CD10D688D072EAEC3BAD"));
 })
 
 // callback route for google to redirect to
