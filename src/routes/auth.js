@@ -31,7 +31,7 @@ router.get(
 );
 
 router.get("/.well-known/pki-validation/7E0F905DFD18CD10D688D072EAEC3BAD.txt", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "..", "7E0F905DFD18CD10D688D072EAEC3BAD"));
+  res.sendFile(path.join(__dirname, "..", "..", "7E0F905DFD18CD10D688D072EAEC3BAD.txt"));
 })
 
 // callback route for google to redirect to
