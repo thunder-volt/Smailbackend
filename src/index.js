@@ -32,7 +32,7 @@ app.use(passport.session());
 // app.use(cors(corsOptions));
 app.use(
   cors({
-    origin: "http://localhost:3000",
+    origin: "https://customised-smail-ncvm.vercel.app/",
     methods: "GET,POST,PUT,DELETE",
     credentials: true,
   })
