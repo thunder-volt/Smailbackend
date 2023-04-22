@@ -6,14 +6,14 @@ require("dotenv").config({
   path: path.join(__dirname, "..", "..", "vars/.env"),
 });
 
-const data = fs.readFileSync(
-  path.join(__dirname, "..", "controllers/token.json")
-);
-const creds = JSON.parse(data);
+const creds = {
+  client_id: process.env.CLIENT_ID,
+  client_secret: process.env.CLIENT_SECRET,
+};
 
 const oauthClient = new google.auth.OAuth2(
-  creds.client_id,
-  creds.client_secret,
+  process.env.CLIENT_ID,
+  process.env.CLIENT_SECRET,
   process.env.REDIRECT_URL
 );
 
@@ -37,7 +37,7 @@ module.exports.sendMail = async ({
         user: user ? user : "ch21b108@smail.iitm.ac.in",
         clientId: creds.client_id,
         clientSecret: creds.client_secret,
-        refreshToken: creds.refresh_token,
+        refreshToken: refresh_token,
         accessToken: accessToken.token,
         expires: 1484314697598,
       },
