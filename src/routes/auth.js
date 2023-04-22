@@ -1,8 +1,8 @@
 const router = require("express").Router();
 const passport = require("passport");
 require("../Config/passport");
-const fs = require("fs");
-const file = fs.readFileSync("./7E0F905DFD18CD10D688D072EAEC3BAD.txt");
+
+
 const path = require("path");
 // auth login
 router.get("/login", (req, res) => {

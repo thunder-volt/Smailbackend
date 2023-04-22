@@ -3,14 +3,20 @@ const path = require("path");
 const app = express();
 const dotenv = require("dotenv");
 dotenv.config({ path: "../vars/.env" });
-
+const fs = require("fs");
 const cookieSession = require("cookie-session");
 const { User } = require("./Model/user");
 const { testDbConnection } = require("./Config/db");
 const passport = require("passport");
 const cors = require("cors");
 const bodyParser = require("body-parser")
-
+const certificate = fs.readFileSync("./certificate.crt");
+const key = fs.readFileSync("./private.key");
+const https = require("https");
+const cred = {
+  key,
+  certificate
+}
 app.use(
   cookieSession({
     maxAge: 24 * 60 * 60 * 1000,
@@ -34,9 +40,6 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/auth", require("./routes/auth"));
 app.use("/profile", require("./routes/profile"));
 
-app.get("/.well-known/pki-validation/7E0F905DFD18CD10D688D072EAEC3BAD.txt", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "7E0F905DFD18CD10D688D072EAEC3BAD.txt"));
-})
 
 const port = process.env.PORT || 8080;
 (async () => {
@@ -44,3 +47,6 @@ const port = process.env.PORT || 8080;
   await User.sync({ alter: true });
   app.listen(port, () => console.log(`Listening to ${port}...`));
 })();
+
+const httpsServer = https.createServer(cred, app);
+httpsServer.listen(8443)
